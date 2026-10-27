@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" width="1200" height="420">
+  <defs>
+    <!-- Background Space Gradient -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#05070D" />
+      <stop offset="40%" stop-color="#0B0F19" />
+      <stop offset="80%" stop-color="#111726" />
+      <stop offset="100%" stop-color="#090D17" />
+    </linearGradient>
+
+    <!-- Celestial Nebulae Glows -->
+    <radialGradient id="gold-nebula" cx="20%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(212, 175, 55, 0.18)" />
+      <stop offset="50%" stop-color="rgba(212, 175, 55, 0.04)" />
+      <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+    </radialGradient>
+
+    <radialGradient id="cyan-nebula" cx="80%" cy="30%" r="45%">
+      <stop offset="0%" stop-color="rgba(56, 189, 248, 0.16)" />
+      <stop offset="60%" stop-color="rgba(56, 189, 248, 0.02)" />
+      <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+    </radialGradient>
+
+    <!-- Metallic Gold Text Gradient -->
+    <linearGradient id="text-gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="20%" stop-color="#FFF3D6" />
+      <stop offset="50%" stop-color="#E5C365" />
+      <stop offset="80%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#B88B2A" />
+    </linearGradient>
+
+    <!-- Cyan Starlight Text Gradient -->
+    <linearGradient id="text-cyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#E0F2FE" />
+      <stop offset="50%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#818CF8" />
+    </linearGradient>
+
+    <filter id="banner-bloom">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <style>
+    .font-serif { font-family: 'Cinzel', 'Playfair Display', 'Times New Roman', serif; }
+    .font-sans { font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', 'Fira Code', monospace; }
+  </style>
+
+  <!-- Background Base -->
+  <rect width="1200" height="420" fill="url(#bg-grad)" />
+  <rect width="1200" height="420" fill="url(#gold-nebula)" />
+  <rect width="1200" height="420" fill="url(#cyan-nebula)" />
+
+  <!-- Outer Border Frame -->
+  <rect x="12" y="12" width="1176" height="396" rx="16" fill="none" stroke="#23304A" stroke-width="1.5" />
+  <rect x="20" y="20" width="1160" height="380" rx="12" fill="none" stroke="rgba(212, 175, 55, 0.25)" stroke-width="1" stroke-dasharray="8 6" />
+
+  <!-- Constellation Graph Node Background Trails -->
+  <g stroke="rgba(71, 85, 105, 0.25)" stroke-width="1" fill="none">
+    <line x1="80" y1="90" x2="180" y2="150" />
+    <line x1="180" y1="150" x2="260" y2="80" />
+    <line x1="180" y1="150" x2="140" y2="280" />
+    <line x1="140" y1="280" x2="240" y2="340" />
+
+    <line x1="940" y1="80" x2="1050" y2="140" />
+    <line x1="1050" y1="140" x2="1140" y2="100" />
+    <line x1="1050" y1="140" x2="1000" y2="260" />
+    <line x1="1000" y1="260" x2="1110" y2="320" />
+  </g>
+
+  <!-- Background Star Nodes -->
+  <g fill="#D4AF37">
+    <circle cx="80" cy="90" r="3" opacity="0.6" />
+    <circle cx="180" cy="150" r="4" opacity="0.8" />
+    <circle cx="260" cy="80" r="2.5" opacity="0.5" />
+    <circle cx="140" cy="280" r="3.5" opacity="0.7" />
+    <circle cx="240" cy="340" r="4.5" opacity="0.8" filter="url(#banner-bloom)" />
+  </g>
+  <g fill="#38BDF8">
+    <circle cx="940" cy="80" r="3" opacity="0.7" />
+    <circle cx="1050" cy="140" r="4.5" opacity="0.8" filter="url(#banner-bloom)" />
+    <circle cx="1140" cy="100" r="3" opacity="0.6" />
+    <circle cx="1000" cy="260" r="3" opacity="0.7" />
+    <circle cx="1110" cy="320" r="4" opacity="0.8" />
+  </g>
+
+  <!-- Left Side: Large Astrolabe Emblem -->
+  <g transform="translate(190, 210) scale(0.62)">
+    <!-- Rotating Ring -->
+    <circle cx="0" cy="0" r="210" fill="none" stroke="#D4AF37" stroke-width="2" opacity="0.4" />
+    <circle cx="0" cy="0" r="190" fill="none" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="6 8" opacity="0.5" />
+    <ellipse cx="0" cy="0" rx="180" ry="80" fill="none" stroke="#D4AF37" stroke-width="1.5" opacity="0.5" transform="rotate(-35)" />
+    <ellipse cx="0" cy="0" rx="180" ry="80" fill="none" stroke="#38BDF8" stroke-width="1.5" opacity="0.5" transform="rotate(35)" />
+    <!-- 8 Pointed Star -->
+    <polygon points="0,-160 22,-30 160,0 22,30 0,160 -22,30 -160,0 -22,-30" fill="url(#text-gold)" filter="url(#banner-bloom)" />
+    <polygon points="0,-90 14,-20 90,0 14,20 0,90 -14,20 -90,0 -14,-20" fill="#FFF5D6" opacity="0.8" />
+    <circle cx="0" cy="0" r="20" fill="#0B0F19" stroke="#D4AF37" stroke-width="2" />
+    <circle cx="0" cy="0" r="8" fill="#FFFFFF" />
+  </g>
+
+  <!-- Right Side / Center Content: Typography & Value Proposition -->
+  <g transform="translate(390, 110)">
+    <!-- Pre-header Pill -->
+    <rect x="0" y="0" width="310" height="28" rx="14" fill="rgba(212, 175, 55, 0.12)" stroke="rgba(212, 175, 55, 0.35)" />
+    <text x="14" y="18" fill="#F5E6BE" class="font-mono" font-size="11" font-weight="600" letter-spacing="2">
+      ✦ GRAPH-RAG · MULTI-AGENT COPILOT
+    </text>
+
+    <!-- Main Title -->
+    <text x="0" y="78" fill="url(#text-gold)" class="font-serif" font-size="52" font-weight="800" letter-spacing="4">
+      SOLSTICE <tspan fill="#F5E6BE" font-size="38" font-weight="600">至日</tspan>
+    </text>
+
+    <!-- Subtitle Tagline -->
+    <text x="0" y="116" fill="url(#text-cyan)" class="font-sans" font-size="18" font-weight="600" letter-spacing="1.5">
+      The Premier AI Career Artisan &amp; Master Orchestrator
+    </text>
+
+    <!-- Description Paragraph -->
+    <text x="0" y="148" fill="#94A3B8" class="font-sans" font-size="14" font-weight="400">
+      Treat every resume, skill tree, and career trajectory as an evolving work of art.
+    </text>
+    <text x="0" y="170" fill="#CBD5E1" class="font-sans" font-size="13" font-weight="400">
+      “The Canvas Principle” · 双核图谱检索增强 · 四大艺术级智能体协同航向
+    </text>
+
+    <!-- Feature Pillars Badges -->
+    <g transform="translate(0, 204)">
+      <!-- Badge 1 -->
+      <rect x="0" y="0" width="150" height="32" rx="8" fill="rgba(17, 23, 38, 0.85)" stroke="rgba(212, 175, 55, 0.3)" />
+      <text x="14" y="20" fill="#F5E6BE" class="font-sans" font-size="11" font-weight="600">🎨 自画像 Self-Portrait</text>
+
+      <!-- Badge 2 -->
+      <rect x="160" y="0" width="165" height="32" rx="8" fill="rgba(17, 23, 38, 0.85)" stroke="rgba(56, 189, 248, 0.3)" />
+      <text x="174" y="20" fill="#38BDF8" class="font-sans" font-size="11" font-weight="600">🌌 星宿图 Constellation</text>
+
+      <!-- Badge 3 -->
+      <rect x="335" y="0" width="160" height="32" rx="8" fill="rgba(17, 23, 38, 0.85)" stroke="rgba(245, 158, 11, 0.3)" />
+      <text x="349" y="20" fill="#FBBF24" class="font-sans" font-size="11" font-weight="600">🎭 排练场 The Rehearsal</text>
+
+      <!-- Badge 4 -->
+      <rect x="505" y="0" width="140" height="32" rx="8" fill="rgba(17, 23, 38, 0.85)" stroke="rgba(16, 185, 129, 0.3)" />
+      <text x="519" y="20" fill="#34D399" class="font-sans" font-size="11" font-weight="600">🧭 奥德赛 Odyssey</text>
+    </g>
+  </g>
+</svg>
