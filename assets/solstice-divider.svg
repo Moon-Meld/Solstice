@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 24" width="800" height="24">
+  <defs>
+    <linearGradient id="div-gold" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#D4AF37" stop-opacity="0" />
+      <stop offset="25%" stop-color="#D4AF37" stop-opacity="0.25" />
+      <stop offset="50%" stop-color="#FFF3D6" stop-opacity="0.9" />
+      <stop offset="75%" stop-color="#D4AF37" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#D4AF37" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <!-- Thin Golden Horizon Line -->
+  <line x1="40" y1="12" x2="760" y2="12" stroke="url(#div-gold)" stroke-width="1" />
+  
+  <!-- Central Starlight Diamond and Satellite Pearls -->
+  <g transform="translate(400, 12)">
+    <polygon points="0,-7 3,-2 8,0 3,2 0,7 -3,2 -8,0 -3,-2" fill="#FFF8E7" stroke="#D4AF37" stroke-width="0.8" />
+    <circle cx="-24" cy="0" r="1.8" fill="#D4AF37" opacity="0.75" />
+    <circle cx="24" cy="0" r="1.8" fill="#D4AF37" opacity="0.75" />
+    <circle cx="-48" cy="0" r="1.2" fill="#D4AF37" opacity="0.4" />
+    <circle cx="48" cy="0" r="1.2" fill="#D4AF37" opacity="0.4" />
+  </g>
+</svg>
