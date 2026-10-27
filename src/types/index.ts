@@ -84,8 +84,10 @@ export interface InterviewSession {
   targetCompany: string;
   targetRole: string;
   roundName: string;
+  roundType: 'coding-concurrency' | 'system-design' | 'culture-leadership';
   messages: InterviewMessage[];
   status: 'idle' | 'in-progress' | 'completed';
+  scratchpadNotes?: string;
   report?: DirectorsCutReport;
 }
 
@@ -116,6 +118,32 @@ export interface OdysseyOpportunity {
   };
 }
 
+export interface JournalEntry {
+  id: string;
+  date: string;
+  title: string;
+  content: string;
+  mood: 'radiant' | 'focused' | 'contemplative' | 'breakthrough';
+  confidenceScore: number; // 0 - 100
+  tags: string[];
+}
+
+export interface RoadmapMilestone {
+  phase: number;
+  title: string;
+  durationWeeks: number;
+  keyConcepts: string[];
+  readingMaterials: string[];
+  milestoneProject: string;
+  verificationCriteria: string;
+}
+
+export interface CompetencyRadar {
+  labels: string[];
+  candidateScores: number[];
+  benchmarkScores: number[];
+}
+
 export interface LLMConfig {
   mode: 'hybrid' | 'gemini' | 'openai';
   apiKey?: string;
@@ -129,5 +157,6 @@ export interface OrchestratorState {
   alignment: ConstellationAlignment | null;
   activeInterview: InterviewSession | null;
   opportunities: OdysseyOpportunity[];
+  journalEntries: JournalEntry[];
   llmConfig: LLMConfig;
 }

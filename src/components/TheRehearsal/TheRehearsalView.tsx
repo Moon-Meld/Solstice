@@ -9,15 +9,25 @@ import {
   CheckCircle2, 
   Flame,
   HelpCircle,
-  Briefcase
+  Briefcase,
+  Volume2,
+  Code2,
+  MessageSquare,
+  AlertTriangle
 } from 'lucide-react';
 import { InterviewSession, InterviewerPersona } from '../../types';
 
 interface Props {
   activeSession: InterviewSession | null;
-  onStartSession: (persona: InterviewerPersona, company: string, roleTitle: string) => void;
+  onStartSession: (
+    persona: InterviewerPersona, 
+    company: string, 
+    roleTitle: string, 
+    roundType?: 'coding-concurrency' | 'system-design' | 'culture-leadership'
+  ) => void;
   onSendAnswer: (answer: string) => Promise<void>;
   onResetSession: () => void;
+  onUpdateScratchpad?: (notes: string) => void;
   defaultCompany: string;
   defaultRoleTitle: string;
 }
@@ -27,12 +37,16 @@ export const TheRehearsalView: React.FC<Props> = ({
   onStartSession,
   onSendAnswer,
   onResetSession,
+  onUpdateScratchpad,
   defaultCompany,
   defaultRoleTitle
 }) => {
   const [selectedPersona, setSelectedPersona] = useState<InterviewerPersona>('tech-lead');
+  const [selectedRoundType, setSelectedRoundType] = useState<'coding-concurrency' | 'system-design' | 'culture-leadership'>('system-design');
   const [candidateInput, setCandidateInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState<'dialogue' | 'scratchpad'>('dialogue');
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const personas: { id: InterviewerPersona; name: string; title: string; desc: string; icon: string }[] = [
     {
@@ -65,17 +79,38 @@ export const TheRehearsalView: React.FC<Props> = ({
     }
   ];
 
+  // Speech synthesis
+  const handleSpeak = (text: string) => {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    if (isSpeaking) {
+      setIsSpeaking(false);
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
+
   const handleSend = async () => {
     if (!candidateInput.trim() || isSubmitting) return;
     const text = candidateInput.trim();
     setCandidateInput('');
-    setIsSubmitting(true);
+    setIsSubmitting(false);
     try {
+      setIsSubmitting(true);
       await onSendAnswer(text);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // Filler word detection
+  const fillerWordCount = (candidateInput.match(/(其实|然后|可能吧|就是说|um|uh|like)/gi) || []).length;
 
   // If no active session, show setup atelier stage
   if (!activeSession) {
@@ -97,6 +132,32 @@ export const TheRehearsalView: React.FC<Props> = ({
                 告别枯燥的题库背诵。步入针对 <strong>{defaultCompany}</strong> 核心标杆岗位的动态多轮博弈，由四大企业级面试人设层层递进审视你的架构深度与气场。
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Round Type Switcher */}
+        <div className="mb-6 p-4 rounded-2xl glass-panel border border-solstice-800 flex flex-wrap items-center justify-between gap-4">
+          <div className="text-xs font-semibold text-slate-200">
+            选择本次排练轮次类型：
+          </div>
+          <div className="flex gap-2">
+            {[
+              { type: 'system-design' as const, label: '行星级系统架构设计 (System Design)' },
+              { type: 'coding-concurrency' as const, label: '高并发与内核算法 (Concurrency & Algorithms)' },
+              { type: 'culture-leadership' as const, label: '文化基因与领导力 (Leadership & Culture)' }
+            ].map(r => (
+              <button
+                key={r.type}
+                onClick={() => setSelectedRoundType(r.type)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                  selectedRoundType === r.type
+                    ? 'bg-solstice-gold text-solstice-950 font-bold shadow-gold-glow'
+                    : 'bg-solstice-900 text-slate-400 hover:text-white border border-solstice-800'
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -145,7 +206,7 @@ export const TheRehearsalView: React.FC<Props> = ({
 
           <div className="mt-8 flex justify-end">
             <button
-              onClick={() => onStartSession(selectedPersona, defaultCompany, defaultRoleTitle)}
+              onClick={() => onStartSession(selectedPersona, defaultCompany, defaultRoleTitle, selectedRoundType)}
               className="flex items-center gap-2 px-8 py-3 rounded-2xl text-sm font-semibold bg-gradient-to-r from-solstice-gold-dim via-solstice-gold to-solstice-gold-light text-solstice-950 hover:brightness-110 shadow-gold-glow transition-all"
             >
               <Radio className="w-4 h-4" />
@@ -181,92 +242,154 @@ export const TheRehearsalView: React.FC<Props> = ({
           </div>
         </div>
 
-        <button
-          onClick={onResetSession}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-solstice-900 border border-solstice-700 text-slate-300 hover:text-white transition-colors"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>重设面试</span>
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Tab Switcher: Live Dialogue vs Whiteboard Scratchpad */}
+          <div className="flex gap-1 p-1 bg-solstice-900 rounded-xl border border-solstice-800 text-xs">
+            <button
+              onClick={() => setActiveTab('dialogue')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg ${
+                activeTab === 'dialogue'
+                  ? 'bg-solstice-gold text-solstice-950 font-bold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>多轮答辩</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('scratchpad')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg ${
+                activeTab === 'scratchpad'
+                  ? 'bg-solstice-gold text-solstice-950 font-bold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Code2 className="w-3.5 h-3.5" />
+              <span>架构白板草稿</span>
+            </button>
+          </div>
+
+          <button
+            onClick={onResetSession}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-solstice-900 border border-solstice-700 text-slate-300 hover:text-white transition-colors"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>重设面试</span>
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Live Dialogue Flow (8 cols) */}
+        {/* Left Column: Live Dialogue Flow or Scratchpad (8 cols) */}
         <div className="lg:col-span-8 space-y-4">
           <div className="p-6 rounded-3xl glass-panel border border-solstice-700/60 shadow-xl min-h-[500px] flex flex-col justify-between">
-            {/* Messages Scroll Area */}
-            <div className="space-y-4 max-h-[540px] overflow-y-auto pr-2">
-              {activeSession.messages.map((msg) => {
-                const isInterviewer = msg.sender === 'interviewer';
-                return (
-                  <div
-                    key={msg.id}
-                    className={`flex flex-col ${isInterviewer ? 'items-start' : 'items-end'}`}
-                  >
-                    <div className="text-[10px] text-slate-500 font-mono mb-1 px-1 flex items-center gap-1.5">
-                      <span>{isInterviewer ? activeSession.targetCompany + ' 面试官' : '候选人回答'}</span>
-                      <span>{msg.timestamp}</span>
-                    </div>
-
-                    <div
-                      className={`max-w-[85%] p-4 rounded-2xl text-xs leading-relaxed ${
-                        isInterviewer
-                          ? 'bg-solstice-900/90 border border-solstice-700/80 text-slate-100 rounded-tl-sm'
-                          : 'bg-gradient-to-r from-solstice-gold/25 to-solstice-gold/15 border border-solstice-gold/40 text-solstice-gold-light rounded-tr-sm'
-                      }`}
-                    >
-                      <p className="whitespace-pre-line">{msg.content}</p>
-
-                      {/* Real-time score indicator */}
-                      {msg.evaluation && (
-                        <div className="mt-3 pt-2.5 border-t border-solstice-700/60 flex items-center justify-between text-[11px]">
-                          <span className="text-solstice-celestial-emerald font-medium flex items-center gap-1">
-                            <Flame className="w-3 h-3" />
-                            即时评测分：{msg.evaluation.score}/100
-                          </span>
-                          <span className="text-slate-400 italic">
-                            {msg.evaluation.quickFeedback}
-                          </span>
+            {activeTab === 'dialogue' ? (
+              <>
+                {/* Messages Scroll Area */}
+                <div className="space-y-4 max-h-[520px] overflow-y-auto pr-2">
+                  {activeSession.messages.map((msg) => {
+                    const isInterviewer = msg.sender === 'interviewer';
+                    return (
+                      <div
+                        key={msg.id}
+                        className={`flex flex-col ${isInterviewer ? 'items-start' : 'items-end'}`}
+                      >
+                        <div className="text-[10px] text-slate-500 font-mono mb-1 px-1 flex items-center gap-2">
+                          <span>{isInterviewer ? activeSession.targetCompany + ' 面试官' : '候选人回答'}</span>
+                          <span>{msg.timestamp}</span>
+                          {isInterviewer && (
+                            <button
+                              onClick={() => handleSpeak(msg.content)}
+                              className="text-solstice-gold hover:text-white p-0.5"
+                              title="语音朗读问题"
+                            >
+                              <Volume2 className="w-3 h-3" />
+                            </button>
+                          )}
                         </div>
-                      )}
+
+                        <div
+                          className={`max-w-[85%] p-4 rounded-2xl text-xs leading-relaxed ${
+                            isInterviewer
+                              ? 'bg-solstice-900/90 border border-solstice-700/80 text-slate-100 rounded-tl-sm'
+                              : 'bg-gradient-to-r from-solstice-gold/25 to-solstice-gold/15 border border-solstice-gold/40 text-solstice-gold-light rounded-tr-sm'
+                          }`}
+                        >
+                          <p className="whitespace-pre-line">{msg.content}</p>
+
+                          {/* Real-time score indicator */}
+                          {msg.evaluation && (
+                            <div className="mt-3 pt-2.5 border-t border-solstice-700/60 flex items-center justify-between text-[11px]">
+                              <span className="text-solstice-celestial-emerald font-medium flex items-center gap-1">
+                                <Flame className="w-3 h-3" />
+                                即时评测分：{msg.evaluation.score}/100
+                              </span>
+                              <span className="text-slate-400 italic">
+                                {msg.evaluation.quickFeedback}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {isSubmitting && (
+                    <div className="flex items-center gap-2 p-3 text-xs text-solstice-gold animate-pulse">
+                      <Sparkles className="w-4 h-4 animate-spin" />
+                      <span>面试官正在推敲你的架构答复与边界条件...</span>
                     </div>
-                  </div>
-                );
-              })}
-
-              {isSubmitting && (
-                <div className="flex items-center gap-2 p-3 text-xs text-solstice-gold animate-pulse">
-                  <Sparkles className="w-4 h-4 animate-spin" />
-                  <span>面试官正在推敲你的架构答复与边界条件...</span>
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Input Box */}
-            <div className="mt-4 pt-4 border-t border-solstice-800">
-              <div className="flex gap-2">
+                {/* Input Box & Filler Word Warning */}
+                <div className="mt-4 pt-4 border-t border-solstice-800">
+                  {fillerWordCount > 2 && (
+                    <div className="mb-2 flex items-center gap-1.5 text-[11px] text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
+                      <AlertTriangle className="w-3 h-3 shrink-0" />
+                      <span>语态提示：检测到 {fillerWordCount} 处冗余口癖词（如“其实/然后”），建议直接以定性结论或数据锚点切入。</span>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <textarea
+                      value={candidateInput}
+                      onChange={(e) => setCandidateInput(e.target.value)}
+                      placeholder="从情境背景、架构权衡、技术实现及量化指标展开阐述..."
+                      rows={2}
+                      className="flex-1 p-3 text-xs bg-solstice-950 border border-solstice-700 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-solstice-gold resize-none"
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSend();
+                        }
+                      }}
+                    />
+                    <button
+                      onClick={handleSend}
+                      disabled={!candidateInput.trim() || isSubmitting}
+                      className="px-5 rounded-xl bg-solstice-gold text-solstice-950 font-semibold hover:brightness-110 disabled:opacity-50 transition-all flex items-center justify-center shrink-0"
+                    >
+                      <Send className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              /* Architecture Whiteboard Scratchpad */
+              <div className="h-full flex flex-col space-y-3">
+                <div className="flex items-center justify-between text-xs text-slate-400">
+                  <span>白板草稿区（模拟现场系统设计草图与容量测算）：</span>
+                  <span className="font-mono text-[10px] text-solstice-gold">Live Markdown / ASCII Editor</span>
+                </div>
                 <textarea
-                  value={candidateInput}
-                  onChange={(e) => setCandidateInput(e.target.value)}
-                  placeholder="从情境背景、架构权衡、技术实现及量化指标展开阐述..."
-                  rows={2}
-                  className="flex-1 p-3 text-xs bg-solstice-950 border border-solstice-700 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-solstice-gold resize-none"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSend();
-                    }
-                  }}
+                  value={activeSession.scratchpadNotes || ''}
+                  onChange={(e) => onUpdateScratchpad && onUpdateScratchpad(e.target.value)}
+                  placeholder="// 在此绘制系统拓扑、API 规范或容灾策略..."
+                  className="w-full flex-1 min-h-[380px] p-4 font-mono text-xs bg-solstice-950 border border-solstice-800 rounded-xl text-slate-200 placeholder-slate-600 focus:outline-none focus:border-solstice-gold resize-none"
                 />
-                <button
-                  onClick={handleSend}
-                  disabled={!candidateInput.trim() || isSubmitting}
-                  className="px-5 rounded-xl bg-solstice-gold text-solstice-950 font-semibold hover:brightness-110 disabled:opacity-50 transition-all flex items-center justify-center shrink-0"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
               </div>
-            </div>
+            )}
           </div>
         </div>
 

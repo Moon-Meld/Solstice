@@ -9,21 +9,26 @@ import {
   FileText, 
   Layers, 
   Copy,
-  Lightbulb
+  Lightbulb,
+  FileDown,
+  Wand2
 } from 'lucide-react';
 import { CandidateProfile, StarBullet } from '../../types';
 import { selfPortraitAgent } from '../../services/agents/selfPortraitAgent';
 import { ragEngine } from '../../services/ragEngine';
+import { ResumeExportModal } from './ResumeExportModal';
 
 interface Props {
   profile: CandidateProfile;
   onRefineBullet: (expId: string, rawBullet: string) => Promise<void>;
+  onBatchRefineAll?: (expId: string) => Promise<void>;
   targetRoleTitle: string;
 }
 
 export const SelfPortraitView: React.FC<Props> = ({
   profile,
   onRefineBullet,
+  onBatchRefineAll,
   targetRoleTitle
 }) => {
   const currentExp = profile.experiences[0];
@@ -32,10 +37,12 @@ export const SelfPortraitView: React.FC<Props> = ({
   );
   const [customInput, setCustomInput] = useState('');
   const [isRefining, setIsRefining] = useState(false);
+  const [isBatchRefining, setIsBatchRefining] = useState(false);
   const [activeStarData, setActiveStarData] = useState<StarBullet | null>(
     currentExp?.starBullets[0] || null
   );
   const [copied, setCopied] = useState(false);
+  const [isExportOpen, setIsExportOpen] = useState(false);
 
   // ATS Resonance calculation
   const atsAnalysis = ragEngine.evaluateAtsResonance(
@@ -54,6 +61,28 @@ export const SelfPortraitView: React.FC<Props> = ({
     } finally {
       setIsRefining(false);
     }
+  };
+
+  const handleBatchRefine = async () => {
+    if (!currentExp || isBatchRefining) return;
+    setIsBatchRefining(true);
+    try {
+      if (onBatchRefineAll) {
+        await onBatchRefineAll(currentExp.id);
+      } else {
+        for (const raw of currentExp.rawBullets) {
+          await handleTriggerRefine(raw);
+        }
+      }
+    } finally {
+      setIsBatchRefining(false);
+    }
+  };
+
+  const handleInjectKeyword = (keyword: string) => {
+    const generatedRaw = `Led the architectural optimization and benchmark deployment for ${keyword} in high-throughput clusters.`;
+    setSelectedBulletText(generatedRaw);
+    handleTriggerRefine(generatedRaw);
   };
 
   const handleCopy = (text: string) => {
@@ -82,7 +111,7 @@ export const SelfPortraitView: React.FC<Props> = ({
             </p>
           </div>
 
-          {/* Quick Metrics */}
+          {/* Quick Metrics & Export Action */}
           <div className="flex items-center gap-4">
             <div className="px-4 py-2.5 rounded-2xl bg-solstice-900/80 border border-solstice-700/80 text-center">
               <div className="text-[10px] text-slate-400 uppercase tracking-widest">ATS 语义共振率</div>
@@ -90,12 +119,14 @@ export const SelfPortraitView: React.FC<Props> = ({
                 {atsAnalysis.score}%
               </div>
             </div>
-            <div className="px-4 py-2.5 rounded-2xl bg-solstice-900/80 border border-solstice-700/80 text-center">
-              <div className="text-[10px] text-slate-400 uppercase tracking-widest">叙事张力评级</div>
-              <div className="text-xl font-bold font-mono text-solstice-celestial-emerald mt-0.5">
-                {activeStarData ? `${activeStarData.potencyScore}/100` : '92/100'}
-              </div>
-            </div>
+
+            <button
+              onClick={() => setIsExportOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-solstice-gold-dim to-solstice-gold text-solstice-950 font-semibold text-xs hover:brightness-110 shadow-gold-glow transition-all"
+            >
+              <FileDown className="w-4 h-4" />
+              <span>长卷导出 (Resume Export)</span>
+            </button>
           </div>
         </div>
       </div>
@@ -112,7 +143,14 @@ export const SelfPortraitView: React.FC<Props> = ({
                   候选人经历节点 (Profile Nodes)
                 </h3>
               </div>
-              <span className="text-xs font-mono text-slate-400">{profile.name}</span>
+              <button
+                onClick={handleBatchRefine}
+                disabled={isBatchRefining}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-solstice-gold/15 border border-solstice-gold/30 text-solstice-gold text-[11px] font-medium hover:bg-solstice-gold/25 transition-all"
+              >
+                <Wand2 className={`w-3 h-3 ${isBatchRefining ? 'animate-spin' : ''}`} />
+                <span>{isBatchRefining ? '全篇炼化中...' : '全篇一键重塑'}</span>
+              </button>
             </div>
 
             {/* Current Experience Card */}
@@ -194,11 +232,13 @@ export const SelfPortraitView: React.FC<Props> = ({
               </div>
             </div>
 
-            {/* Target JD Keyword Resonance Breakdown */}
+            {/* Target JD Keyword Resonance Breakdown & 1-Click Injection */}
             <div className="mt-6 p-4 rounded-xl bg-solstice-900/60 border border-solstice-800">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-200 mb-2">
-                <Target className="w-3.5 h-3.5 text-solstice-celestial-blue" />
-                <span>目标标杆 JD 关键词捕获雷达</span>
+              <div className="flex items-center justify-between text-xs font-semibold text-slate-200 mb-2">
+                <div className="flex items-center gap-2">
+                  <Target className="w-3.5 h-3.5 text-solstice-celestial-blue" />
+                  <span>标杆 JD 关键词雷达（点击未捕获词一键注入）</span>
+                </div>
               </div>
               <div className="flex flex-wrap gap-1.5 mt-2">
                 {atsAnalysis.matchedKeywords.map((kw, i) => (
@@ -208,9 +248,14 @@ export const SelfPortraitView: React.FC<Props> = ({
                   </span>
                 ))}
                 {atsAnalysis.missingCriticalKeywords.map((kw, i) => (
-                  <span key={i} className="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/10 border border-amber-500/30 text-amber-300">
-                    + 待融入: {kw}
-                  </span>
+                  <button
+                    key={i}
+                    onClick={() => handleInjectKeyword(kw)}
+                    className="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/10 border border-amber-500/30 text-amber-300 hover:bg-amber-500/20 hover:border-amber-400 transition-all cursor-pointer"
+                    title="点击将该缺失关键词智能注入并重塑为 STAR 描述"
+                  >
+                    + 注入: {kw}
+                  </button>
                 ))}
               </div>
             </div>
@@ -346,6 +391,13 @@ export const SelfPortraitView: React.FC<Props> = ({
           </div>
         </div>
       </div>
+
+      {/* Full Resume Export Modal */}
+      <ResumeExportModal
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+        profile={profile}
+      />
     </div>
   );
 };

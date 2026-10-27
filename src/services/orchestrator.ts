@@ -3,14 +3,16 @@ import {
   AtelierType, 
   CandidateProfile, 
   OdysseyOpportunity, 
-  InterviewerPersona 
+  InterviewerPersona,
+  JournalEntry
 } from '../types';
 import { selfPortraitAgent } from './agents/selfPortraitAgent';
 import { constellationAgent } from './agents/constellationAgent';
 import { theRehearsalAgent } from './agents/theRehearsalAgent';
 import { llmAdapter } from './llmAdapter';
+import { kgEngine } from './kgEngine';
 
-// Initial Demo Profile: A rising systems engineer aspiring for Frontier AI Labs & Top Quant
+// Initial Demo Profile
 const INITIAL_DEMO_PROFILE: CandidateProfile = {
   name: 'Alexandre Sterling (盛凌)',
   title: 'Systems & Distributed Computing Artisan',
@@ -111,6 +113,27 @@ const INITIAL_OPPORTUNITIES: OdysseyOpportunity[] = [
   }
 ];
 
+const INITIAL_JOURNAL_ENTRIES: JournalEntry[] = [
+  {
+    id: 'j-1',
+    date: '2026-10-25',
+    title: '突破 NCCL 通信瓶颈后的沉思',
+    content: '在排练场与 Dr. Vance 模拟了 MoE 模型跨节点 All-to-All 梯度死锁场景。第一性原理至关重要：永远不要将延迟归咎于玄学，而是拆解为网络拓扑环形通信（Ring NCCL）与 PCIe 主机搬运边界。信心倍增。',
+    mood: 'breakthrough',
+    confidenceScore: 92,
+    tags: ['Distributed Systems', 'The Rehearsal', 'NCCL']
+  },
+  {
+    id: 'j-2',
+    date: '2026-10-23',
+    title: '重塑自画像简历的顿悟',
+    content: '将“负责微服务与数据库优化”用 STAR 炼金术重构为“主导无锁环形队列与内存池设计，降低 p99 延迟 94%”。叙事不是夸大，而是还事实以应有的技术尊严与度量衡。',
+    mood: 'radiant',
+    confidenceScore: 88,
+    tags: ['Self-Portrait', 'STAR Framework', 'Empowerment']
+  }
+];
+
 export class MasterOrchestrator {
   private state: OrchestratorState;
   private listeners: ((state: OrchestratorState) => void)[] = [];
@@ -122,6 +145,7 @@ export class MasterOrchestrator {
       alignment: null,
       activeInterview: null,
       opportunities: INITIAL_OPPORTUNITIES,
+      journalEntries: INITIAL_JOURNAL_ENTRIES,
       llmConfig: llmAdapter.getConfig()
     };
 
@@ -168,6 +192,25 @@ export class MasterOrchestrator {
     this.notify();
   }
 
+  public addCustomSkill(skillLabel: string) {
+    const cleanLabel = skillLabel.trim();
+    if (!cleanLabel) return;
+    const newId = `skill-custom-${Date.now()}`;
+    const newNode = {
+      id: newId,
+      label: cleanLabel,
+      type: 'skill' as const,
+      category: 'advanced' as const,
+      tier: 2 as const,
+      domain: 'Custom Mastery',
+      description: `Candidate custom competency in ${cleanLabel}.`
+    };
+    kgEngine.getAllNodes().push(newNode);
+    this.state.profile.skills.push(newId);
+    this.recalculateAlignment();
+    this.notify();
+  }
+
   public recalculateAlignment() {
     this.state.alignment = constellationAgent.generateAlignment(
       this.state.profile.skills,
@@ -189,18 +232,41 @@ export class MasterOrchestrator {
     this.notify();
   }
 
-  public startMockInterview(persona: InterviewerPersona, company: string, roleTitle: string) {
+  public async batchRefineAllBullets(expId: string): Promise<void> {
+    const exp = this.state.profile.experiences.find(e => e.id === expId);
+    if (!exp) return;
+    for (const raw of exp.rawBullets) {
+      await this.refineBullet(expId, raw);
+    }
+    this.notify();
+  }
+
+  public startMockInterview(
+    persona: InterviewerPersona, 
+    company: string, 
+    roleTitle: string,
+    roundType: 'coding-concurrency' | 'system-design' | 'culture-leadership' = 'system-design'
+  ) {
     const firstMsg = theRehearsalAgent.initiateSession(company, roleTitle, persona);
     this.state.activeInterview = {
       id: `interview-${Date.now()}`,
       persona,
       targetCompany: company,
       targetRole: roleTitle,
-      roundName: `${company} · Systems & Mindset Assessment`,
+      roundName: `${company} · ${roundType === 'coding-concurrency' ? '并发核心与底层算法' : roundType === 'system-design' ? '行星级系统架构设计' : '主权领导力与文化基因'}评估`,
+      roundType,
       messages: [firstMsg],
-      status: 'in-progress'
+      status: 'in-progress',
+      scratchpadNotes: `// [${company} 系统设计草稿板]\n// 需求与容量预估：\n// - 峰值吞吐: 100,000 QPS\n// - 延迟约束: p99 < 10ms\n// 架构拓扑分层：\n// Client -> L4 LB -> Ring Buffer Gateway -> Distributed Workers`
     };
     this.notify();
+  }
+
+  public updateScratchpad(notes: string) {
+    if (this.state.activeInterview) {
+      this.state.activeInterview.scratchpadNotes = notes;
+      this.notify();
+    }
   }
 
   public async sendInterviewAnswer(answer: string) {
@@ -244,12 +310,31 @@ export class MasterOrchestrator {
     this.notify();
   }
 
+  public addOpportunity(oppData: Omit<OdysseyOpportunity, 'id'>) {
+    const newOpp: OdysseyOpportunity = {
+      ...oppData,
+      id: `opp-${Date.now()}`
+    };
+    this.state.opportunities.unshift(newOpp);
+    this.notify();
+  }
+
   public updateOpportunityStage(id: string, stage: OdysseyOpportunity['stage']) {
     const opp = this.state.opportunities.find(o => o.id === id);
     if (opp) {
       opp.stage = stage;
       this.notify();
     }
+  }
+
+  public addJournalEntry(entryData: Omit<JournalEntry, 'id' | 'date'>) {
+    const newEntry: JournalEntry = {
+      ...entryData,
+      id: `j-${Date.now()}`,
+      date: new Date().toISOString().split('T')[0]
+    };
+    this.state.journalEntries.unshift(newEntry);
+    this.notify();
   }
 
   public setLLMConfig(newConfig: Partial<typeof this.state.llmConfig>) {

@@ -45,6 +45,7 @@ export const App: React.FC = () => {
           <SelfPortraitView
             profile={state.profile}
             onRefineBullet={(expId, rawBullet) => orchestrator.refineBullet(expId, rawBullet)}
+            onBatchRefineAll={(expId) => orchestrator.batchRefineAllBullets(expId)}
             targetRoleTitle={targetRoleTitle}
           />
         )}
@@ -55,15 +56,17 @@ export const App: React.FC = () => {
             targetRoleId={state.profile.targetRole}
             alignment={state.alignment}
             onToggleSkill={(skillId) => orchestrator.toggleSkill(skillId)}
+            onAddCustomSkill={(label) => orchestrator.addCustomSkill(label)}
           />
         )}
 
         {state.activeAtelier === 'the-rehearsal' && (
           <TheRehearsalView
             activeSession={state.activeInterview}
-            onStartSession={(persona, comp, role) => orchestrator.startMockInterview(persona, comp, role)}
+            onStartSession={(persona, comp, role, roundType) => orchestrator.startMockInterview(persona, comp, role, roundType)}
             onSendAnswer={(answer) => orchestrator.sendInterviewAnswer(answer)}
             onResetSession={() => orchestrator.resetInterview()}
+            onUpdateScratchpad={(notes) => orchestrator.updateScratchpad(notes)}
             defaultCompany={state.alignment?.companyName || 'OpenAI'}
             defaultRoleTitle={targetRoleTitle}
           />
@@ -72,7 +75,10 @@ export const App: React.FC = () => {
         {state.activeAtelier === 'odyssey' && (
           <OdysseyView
             opportunities={state.opportunities}
+            journalEntries={state.journalEntries}
             onUpdateStage={(id, stage) => orchestrator.updateOpportunityStage(id, stage)}
+            onAddOpportunity={(opp) => orchestrator.addOpportunity(opp)}
+            onAddJournalEntry={(entry) => orchestrator.addJournalEntry(entry)}
             candidateSkills={state.profile.skills}
           />
         )}
