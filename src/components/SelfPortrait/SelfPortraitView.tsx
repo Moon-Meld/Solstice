@@ -17,11 +17,15 @@ import { CandidateProfile, StarBullet } from '../../types';
 import { selfPortraitAgent } from '../../services/agents/selfPortraitAgent';
 import { ragEngine } from '../../services/ragEngine';
 import { ResumeExportModal } from './ResumeExportModal';
+import { ResumeImportModal } from './ResumeImportModal';
 
 interface Props {
   profile: CandidateProfile;
   onRefineBullet: (expId: string, rawBullet: string) => Promise<void>;
   onBatchRefineAll?: (expId: string) => Promise<void>;
+  onSelectTemplate?: (templateId: string) => void;
+  onImportProfile?: (profile: CandidateProfile) => void;
+  onResetDefault?: () => void;
   targetRoleTitle: string;
 }
 
@@ -29,6 +33,9 @@ export const SelfPortraitView: React.FC<Props> = ({
   profile,
   onRefineBullet,
   onBatchRefineAll,
+  onSelectTemplate,
+  onImportProfile,
+  onResetDefault,
   targetRoleTitle
 }) => {
   const currentExp = profile.experiences[0];
@@ -43,6 +50,7 @@ export const SelfPortraitView: React.FC<Props> = ({
   );
   const [copied, setCopied] = useState(false);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
 
   // ATS Resonance calculation
   const atsAnalysis = ragEngine.evaluateAtsResonance(
@@ -119,6 +127,14 @@ export const SelfPortraitView: React.FC<Props> = ({
                 {atsAnalysis.score}%
               </div>
             </div>
+
+            <button
+              onClick={() => setIsImportOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-solstice-900/90 border border-solstice-700/80 hover:border-solstice-gold text-slate-200 font-medium text-xs transition-all"
+            >
+              <FileText className="w-4 h-4 text-solstice-gold" />
+              <span>载入 / 切换模板</span>
+            </button>
 
             <button
               onClick={() => setIsExportOpen(true)}
@@ -397,6 +413,16 @@ export const SelfPortraitView: React.FC<Props> = ({
         isOpen={isExportOpen}
         onClose={() => setIsExportOpen(false)}
         profile={profile}
+      />
+
+      {/* Resume Import & Domain Template Switcher Modal */}
+      <ResumeImportModal
+        isOpen={isImportOpen}
+        onClose={() => setIsImportOpen(false)}
+        onSelectTemplate={(id) => onSelectTemplate && onSelectTemplate(id)}
+        onImportProfile={(p) => onImportProfile && onImportProfile(p)}
+        onResetDefault={() => onResetDefault && onResetDefault()}
+        currentTargetRole={targetRoleTitle}
       />
     </div>
   );

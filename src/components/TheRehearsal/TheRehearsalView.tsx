@@ -16,6 +16,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { InterviewSession, InterviewerPersona } from '../../types';
+import { InterviewReportModal } from './InterviewReportModal';
 
 interface Props {
   activeSession: InterviewSession | null;
@@ -47,6 +48,7 @@ export const TheRehearsalView: React.FC<Props> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState<'dialogue' | 'scratchpad'>('dialogue');
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const personas: { id: InterviewerPersona; name: string; title: string; desc: string; icon: string }[] = [
     {
@@ -268,6 +270,15 @@ export const TheRehearsalView: React.FC<Props> = ({
               <span>架构白板草稿</span>
             </button>
           </div>
+
+          <button
+            onClick={() => setIsReportModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-solstice-gold/20 border border-solstice-gold/40 text-solstice-gold hover:bg-solstice-gold hover:text-solstice-950 transition-all"
+            title="查看并导出完整复盘专报"
+          >
+            <Award className="w-3.5 h-3.5" />
+            <span>复盘专报</span>
+          </button>
 
           <button
             onClick={onResetSession}
@@ -499,6 +510,13 @@ export const TheRehearsalView: React.FC<Props> = ({
           )}
         </div>
       </div>
+
+      {/* Interview Dossier / Report Modal */}
+      <InterviewReportModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        session={activeSession}
+      />
     </div>
   );
 };

@@ -4,66 +4,20 @@ import {
   CandidateProfile, 
   OdysseyOpportunity, 
   InterviewerPersona,
-  JournalEntry
+  JournalEntry,
+  StarBullet,
+  ExperienceItem
 } from '../types';
 import { selfPortraitAgent } from './agents/selfPortraitAgent';
 import { constellationAgent } from './agents/constellationAgent';
 import { theRehearsalAgent } from './agents/theRehearsalAgent';
 import { llmAdapter } from './llmAdapter';
 import { kgEngine } from './kgEngine';
+import { storageService } from './storage';
+import { DOMAIN_RESUME_TEMPLATES } from './resumeParser';
 
 // Initial Demo Profile
-const INITIAL_DEMO_PROFILE: CandidateProfile = {
-  name: 'Alexandre Sterling (盛凌)',
-  title: 'Systems & Distributed Computing Artisan',
-  email: 'alexandre.sterling@solstice.dev',
-  targetRole: 'role-openai-ai-infra',
-  summary: 'Distributed systems engineer with deep interest in low-level memory architectures, asynchronous runtimes, and frontier AI serving infrastructure. Driven by first-principles deconstruction of latency and throughput bottlenecks.',
-  skills: [
-    'skill-python',
-    'skill-dist-sys',
-    'skill-rag-triad',
-    'skill-vector-db',
-    'skill-first-principles'
-  ],
-  experiences: [
-    {
-      id: 'exp-1',
-      company: 'Aether Cloud Systems',
-      role: 'Distributed Systems Engineer',
-      period: '2023 - Present',
-      location: 'San Francisco, CA',
-      rawBullets: [
-        'Worked on PyTorch model training and fixed GPU memory issues when running large batches.',
-        'Helped improve the database speed and wrote some API endpoints in Go for the payments service.',
-        'Assisted in building an AI chatbot for customer support that answered user questions.'
-      ],
-      starBullets: [
-        {
-          id: 'sb-1',
-          original: 'Worked on PyTorch model training and fixed GPU memory issues when running large batches.',
-          situation: 'High-throughput transformer fine-tuning faced continuous out-of-memory (OOM) crashes across 64-GPU clusters during 32k context runs.',
-          task: 'Eliminate peak activation memory overhead without sacrificing token training throughput.',
-          action: 'Engineered custom Triton FlashAttention kernels and zero-redundancy optimizer (ZeRO-3) activation checkpointing.',
-          result: 'Reduced peak VRAM footprint by 44% and scaled context length from 8k to 32k tokens on 128 H100 nodes with 99.8% job completion rate.',
-          metrics: ['-44% Peak VRAM', '4\u00d7 Context Window (32k)', '99.8% SLA'],
-          actionVerb: 'Engineered',
-          potencyScore: 94,
-          refined: 'Engineered custom Triton FlashAttention kernels and ZeRO-3 activation checkpointing, reducing peak GPU VRAM footprint by 44% and scaling context capacity from 8k to 32k tokens on 128 H100 nodes.',
-          critique: 'Replaces passive verb with authoritative technical mechanism and concrete multi-dimensional metrics.'
-        }
-      ]
-    }
-  ],
-  education: [
-    {
-      institution: 'UC Berkeley / Tsinghua University',
-      degree: 'B.S. in Computer Science & Applied Mathematics',
-      period: '2019 - 2023',
-      highlights: 'Summa Cum Laude, Dean’s Honors List, Published in SysML on distributed memory locality.'
-    }
-  ]
-};
+const INITIAL_DEMO_PROFILE: CandidateProfile = DOMAIN_RESUME_TEMPLATES[0].profile;
 
 const INITIAL_OPPORTUNITIES: OdysseyOpportunity[] = [
   {
@@ -139,15 +93,21 @@ export class MasterOrchestrator {
   private listeners: ((state: OrchestratorState) => void)[] = [];
 
   constructor() {
+    const loaded = storageService.loadState();
+
     this.state = {
-      activeAtelier: 'self-portrait',
-      profile: INITIAL_DEMO_PROFILE,
+      activeAtelier: loaded?.activeAtelier || 'self-portrait',
+      profile: loaded?.profile || INITIAL_DEMO_PROFILE,
       alignment: null,
       activeInterview: null,
-      opportunities: INITIAL_OPPORTUNITIES,
-      journalEntries: INITIAL_JOURNAL_ENTRIES,
-      llmConfig: llmAdapter.getConfig()
+      opportunities: loaded?.opportunities || INITIAL_OPPORTUNITIES,
+      journalEntries: loaded?.journalEntries || INITIAL_JOURNAL_ENTRIES,
+      llmConfig: loaded?.llmConfig || llmAdapter.getConfig()
     };
+
+    if (loaded?.llmConfig) {
+      llmAdapter.setConfig(loaded.llmConfig);
+    }
 
     // Calculate initial constellation alignment
     this.recalculateAlignment();
@@ -165,6 +125,7 @@ export class MasterOrchestrator {
   }
 
   private notify() {
+    storageService.saveState(this.state);
     for (const listener of this.listeners) {
       listener(this.getState());
     }
@@ -216,6 +177,37 @@ export class MasterOrchestrator {
       this.state.profile.skills,
       this.state.profile.targetRole
     );
+  }
+
+  public loadDomainTemplate(templateId: string) {
+    const found = DOMAIN_RESUME_TEMPLATES.find(t => t.id === templateId);
+    if (found) {
+      this.state.profile = JSON.parse(JSON.stringify(found.profile));
+      this.recalculateAlignment();
+      this.notify();
+    }
+  }
+
+  public importProfile(profile: CandidateProfile) {
+    this.state.profile = profile;
+    this.recalculateAlignment();
+    this.notify();
+  }
+
+  public updateStarBullet(expId: string, bulletId: string, updatedFields: Partial<StarBullet>) {
+    const exp = this.state.profile.experiences.find(e => e.id === expId);
+    if (exp) {
+      const bullet = exp.starBullets.find(b => b.id === bulletId);
+      if (bullet) {
+        Object.assign(bullet, updatedFields);
+        this.notify();
+      }
+    }
+  }
+
+  public addExperience(exp: ExperienceItem) {
+    this.state.profile.experiences.unshift(exp);
+    this.notify();
   }
 
   public async refineBullet(expId: string, rawBullet: string): Promise<void> {
@@ -334,6 +326,25 @@ export class MasterOrchestrator {
       date: new Date().toISOString().split('T')[0]
     };
     this.state.journalEntries.unshift(newEntry);
+    this.notify();
+  }
+
+  public exportWorkspaceBackup() {
+    storageService.exportWorkspaceFile(this.state);
+  }
+
+  public resetToDefaultWorkspace() {
+    storageService.clearState();
+    this.state = {
+      activeAtelier: 'self-portrait',
+      profile: DOMAIN_RESUME_TEMPLATES[0].profile,
+      alignment: null,
+      activeInterview: null,
+      opportunities: INITIAL_OPPORTUNITIES,
+      journalEntries: INITIAL_JOURNAL_ENTRIES,
+      llmConfig: llmAdapter.getConfig()
+    };
+    this.recalculateAlignment();
     this.notify();
   }
 

@@ -37,6 +37,7 @@ export const App: React.FC = () => {
         onSelectTargetRole={(roleId) => orchestrator.updateTargetRole(roleId)}
         llmConfig={state.llmConfig}
         onOpenSettings={() => setIsSettingsOpen(true)}
+        onExportBackup={() => orchestrator.exportWorkspaceBackup()}
       />
 
       {/* Main Atelier View Container */}
@@ -46,6 +47,9 @@ export const App: React.FC = () => {
             profile={state.profile}
             onRefineBullet={(expId, rawBullet) => orchestrator.refineBullet(expId, rawBullet)}
             onBatchRefineAll={(expId) => orchestrator.batchRefineAllBullets(expId)}
+            onSelectTemplate={(id) => orchestrator.loadDomainTemplate(id)}
+            onImportProfile={(p) => orchestrator.importProfile(p)}
+            onResetDefault={() => orchestrator.resetToDefaultWorkspace()}
             targetRoleTitle={targetRoleTitle}
           />
         )}

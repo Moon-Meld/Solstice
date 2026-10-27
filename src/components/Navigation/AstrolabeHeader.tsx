@@ -6,7 +6,8 @@ import {
   Radio, 
   SlidersHorizontal,
   ChevronDown,
-  Layers
+  Layers,
+  Download
 } from 'lucide-react';
 import { AtelierType, LLMConfig } from '../../types';
 import { kgEngine } from '../../services/kgEngine';
@@ -18,6 +19,7 @@ interface Props {
   onSelectTargetRole: (roleId: string) => void;
   llmConfig: LLMConfig;
   onOpenSettings: () => void;
+  onExportBackup?: () => void;
 }
 
 export const AstrolabeHeader: React.FC<Props> = ({
@@ -26,7 +28,8 @@ export const AstrolabeHeader: React.FC<Props> = ({
   currentTargetRole,
   onSelectTargetRole,
   llmConfig,
-  onOpenSettings
+  onOpenSettings,
+  onExportBackup
 }) => {
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const roles = kgEngine.getRoleNodes();
@@ -155,6 +158,18 @@ export const AstrolabeHeader: React.FC<Props> = ({
               </div>
             )}
           </div>
+
+          {/* Export Full Workspace Backup */}
+          {onExportBackup && (
+            <button
+              onClick={onExportBackup}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-xl border border-solstice-700/70 bg-solstice-900/80 hover:border-solstice-gold/40 text-slate-300 hover:text-slate-100 transition-all"
+              title="导出当前工作区备份文件 (JSON)"
+            >
+              <Download className="w-3.5 h-3.5 text-solstice-gold" />
+              <span className="hidden sm:inline font-mono text-[11px] text-slate-300">备份</span>
+            </button>
+          )}
 
           {/* Settings / Engine Toggle */}
           <button
