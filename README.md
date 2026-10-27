@@ -1,191 +1,165 @@
 <div align="center">
 
-  <img src="assets/solstice-banner.svg" alt="Solstice Banner" width="100%" />
+  <img src="assets/solstice-banner.svg" alt="Solstice (至日) AI Career Artisan" width="100%" />
 
   <br />
-  <br />
 
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-  [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-  [![Vite](https://img.shields.io/badge/Vite-6.1-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-  [![Architecture](https://img.shields.io/badge/Architecture-Graph--RAG-D4AF37?style=for-the-badge)](https://github.com/Moon-Meld/Solstice)
-  [![License](https://img.shields.io/badge/License-MIT-10B981?style=for-the-badge)](LICENSE)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![React](https://img.shields.io/badge/React-18.3-222222?style=flat-square&logo=react&logoColor=61DAFB)](https://react.dev/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![Vite](https://img.shields.io/badge/Vite-6.1-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
+  [![Architecture](https://img.shields.io/badge/Architecture-Graph--RAG-D4AF37?style=flat-square)](https://github.com/Moon-Meld/Solstice)
+  [![License](https://img.shields.io/badge/License-MIT-10B981?style=flat-square)](LICENSE)
+
+  <br />
 
   <p align="center">
-    <strong>🌌 专为顶级名企求职与精英实习打造的 AI 职业生涯艺术工坊与总指挥官</strong>
+    <strong>🌌 专为精英实习与名企求职打造的 AI 职业生涯艺术工坊与总指挥官</strong>
     <br />
-    <em>"The Canvas Principle"：每一份简历、每一条技能树与职业航向，皆为持续生长的艺术品，而非机械打勾的清单。</em>
+    <em>拒绝冰冷的关键词堆砌，将每一段经历炼化为具备严谨量化支点与统御力的叙事杰作。</em>
   </p>
 
   <p align="center">
-    <a href="#-系统架构图">系统架构</a> •
-    <a href="#-四大艺术工坊-the-four-ateliers">四大工坊</a> •
-    <a href="#-双核引擎机制">双核引擎</a> •
+    <a href="#-四大艺术工坊-the-four-ateliers">工坊特性</a> •
+    <a href="#-双核-graph-rag-引擎">双核引擎</a> •
+    <a href="#-系统架构">系统架构</a> •
     <a href="#-快速上手">快速上手</a> •
-    <a href="#-工程目录结构">工程目录</a>
+    <a href="#-目录与工程设计">目录设计</a>
   </p>
 
 </div>
 
 ---
 
-## ✦ 核心哲学：The Canvas Principle (画布原则)
-
-在 **Solstice (至日)** 的世界里，求职不是机械匹配关键词的算力比赛，而是候选人与顶尖企业之间的**叙事共振**与**价值重合**：
-
-* **拒绝冰冷清单**：我们将技能拓扑与经历映射至天穹星图，让优势如星辰般耀眼，让差距化作清晰可循的跃迁天桥。
-* **双核智能驱动**：**Graph-RAG** 融合结构化知识图谱（KG）的多跳推演与动态向量记忆（RAG）的精准溯源。
-* **艺术级人机交互**：采用文艺复兴浑天仪与深邃天穹色系（Obsidian Night & Solstice Gold），带来沉浸式的求职策展体验。
-
----
-
-## 🏛️ 系统架构图
-
-```mermaid
-flowchart TD
-    subgraph UI ["Solstice 客户端 (Canvas & Constellation UI)"]
-        Nav["天体罗盘导航 (Astrolabe Switcher)"]
-        SP_UI["自画像 Atelier (Resume Canvas)"]
-        CS_UI["星宿图 Atelier (Interactive Graph)"]
-        RH_UI["排练场 Atelier (Mock Stage)"]
-        OD_UI["奥德赛 Atelier (Copilot Kanban)"]
-    end
-
-    subgraph Orchestrator ["至日核心编排引擎 (Master Orchestrator)"]
-        Router["意图识别与工作流路由器 (Intent Router)"]
-        Memory["统一上下文流 (Context & Memory Bus)"]
-        ModelAdapter["渐进式模型适配器 (Gemini / OpenAI / Mock Engine)"]
-    end
-
-    subgraph Agents ["四大子 Agent 矩阵"]
-        Agent_SP["Self-Portrait Agent (简历重构与 STAR 炼金术)"]
-        Agent_CS["Constellation Agent (多跳图谱技能对齐与差距寻径)"]
-        Agent_RH["The Rehearsal Agent (多重人设面试官与实时评审)"]
-        Agent_OD["Odyssey Agent (职业脉络与破局文书 Copilot)"]
-    end
-
-    subgraph GraphRAG ["双核 Graph-RAG 引擎"]
-        subgraph KG ["知识图谱引擎 (Career Knowledge Graph)"]
-            KG_Nodes["节点: Skills, Roles, Companies, Competencies, Culture"]
-            KG_Edges["边: REQUIRES, BRIDGES_TO, CULTURE_MATCH, EVALUATES"]
-            KG_Pathfinder["多跳路径探寻器 (Multi-hop Gap Pathfinder)"]
-        end
-        subgraph RAG ["动态语义记忆库 (Vector Memory & Chunks)"]
-            V_JD["顶级企业标杆 JD 库 (FAANG, 量化, 顶级咨询)"]
-            V_STAR["高张力动词与 STAR 典范知识库"]
-            V_Interview["名企历年真实题库与解题思路 (Question Bank)"]
-        end
-    end
-
-    UI --> Router
-    Router --> Agents
-    Agents <--> Memory
-    Agents <--> ModelAdapter
-    Agents <--> GraphRAG
-    KG <--> KG_Pathfinder
-    ModelAdapter --> UI
-```
+> ### ✦ The Canvas Principle (画布原则)
+> 每一份简历、每一条技能树与职业航向，皆为持续生长的艺术品，而非机械打勾的清单。我们融合 **知识图谱 (KG)** 的多跳拓扑推理与 **动态检索增强 (RAG)** 的语境记忆，赋予求职者从简历打磨、技能跃迁到面试博弈的全周期主权。
 
 ---
 
 ## 🌌 四大艺术工坊 (The Four Ateliers)
 
-### 1. 🎨 自画像 (Self-Portrait · 履历重构与叙事艺术)
-* **STAR 叙事黄金重塑**：精准提炼情境 (S)、任务 (T)、行动 (A)、结果 (R) 四维逻辑，将平铺直叙的职责转化为具备量化支点的硬核战绩；
-* **动词能量指数 (Action Verb Potency Meter)**：自动剔除弱动词，替换为具有统御力的高潜动词（如 `Orchestrated`, `Decoupled`, `Spearheaded`）；
-* **ATS 语义共振雷达**：动态检索标杆 JD 关键词，实时呈现匹配捕获度与高价值待融入词汇。
-
-### 2. 🌌 星宿图 (Constellation · 岗位匹配与技能图谱)
-* **天体引力场力导向可视化**：交互式点亮候选人已有技能星宿、目标岗位必备星宿与待点亮坐标；
-* **多跳技能差距寻径 (Multi-Hop Skill Bridges)**：利用 BFS 算法在技能拓扑中计算最优学习迁移路径（如：`Python` $\to$ `分布式共识` $\to$ `LLM 推理架构` $\to$ `CUDA 内核`）；
-* **动态调节点亮**：点击任意星宿即时重算全图引力场对齐分，并显示名企文化基因拓扑。
-
-### 3. 🎭 排练场 (The Rehearsal · 沉浸式模拟面试)
-* **四大企业级面试官人设**：
-  * **⚡ Dr. Vance (严苛架构负责人)**：直击底层并发、GC 停顿、内存屏障与故障恢复；
-  * **🧭 Elena Rostova (前瞻产品总监)**：深挖第一性原理、用户共情与单位经济收益；
-  * **🤝 Sarah Jenkins (敏锐资深 HR)**：审视文化契合、团队冲突调解与心理安全感；
-  * **📐 Nikolai Chen (量化策略总监)**：瞬时期望值推导、条件概率与贝叶斯思维。
-* **导演剪辑版复盘报告 (Director's Cut Report)**：提供技术纵深、结构条理、量化严谨、领导力气场四维雷达评分，并附带至日典范级答题范文 (Golden Exemplar)。
-
-### 4. 🧭 奥德赛 (Odyssey · 求职生涯航向与战略副驾)
-* **全生命周期航道看板 (Kanban)**：发现机缘 $\to$ 定制重塑 $\to$ 推进面试 $\to$ 斩获 Offer $\to$ 战略博弈；
-* **文化基因定向破局信 (Cultural Outreach Composer)**：针对业务主管、极客同行或招聘官生成量身定制的破局邮件；
-* **主权艺术家薪酬博弈战略**：依据图谱共振优势输出高阶反向薪酬谈判方案。
+| 工坊 | 核心定位 | 核心能力 |
+| :--- | :--- | :--- |
+| **🎨 自画像**<br><sub>Self-Portrait</sub> | **简历重构与叙事艺术** | • **STAR 黄金重塑**：提炼情境、任务、行动与量化战果，消除平淡被动动词<br>• **动词能量指数**：评估动作动词统治力并自动注入高潜专业词汇<br>• **ATS 语义共振**：实时比对目标职位标杆 JD，雷达透视核心词捕获度 |
+| **🌌 星宿图**<br><sub>Constellation</sub> | **技能图谱与多跳对齐** | • **天体引力场星图**：交互式点亮技能星宿、目标岗位必备星宿与跃迁星轨<br>• **多跳跃迁天桥**：基于 BFS 算法推理跨技能成长路线（如 `Python` $\to$ `分布式共识` $\to$ `CUDA 内核`）<br>• **文化基因拓扑**：解构 OpenAI、Google、Jane Street、Stripe 等底层考核基因 |
+| **🎭 排练场**<br><sub>The Rehearsal</sub> | **沉浸式模拟面试** | • **四重名企人设**：严苛架构负责人、前瞻产品总监、资深敏锐 HR、量化策略总监<br>• **高频动态攻防**：递进式追问、实时评测分与至日战术锦囊提示抽屉<br>• **导演剪辑版复盘**：技术纵深、结构条理、量化严谨、气场四维评分与典范范文 |
+| **🧭 奥德赛**<br><sub>Odyssey</sub> | **生涯航道与战略副驾** | • **全周期看板**：追踪发现、定制重塑、推进面试、斩获 Offer 到战略博弈全阶段<br>• **文化定向破局信**：针对业务主管、核心极客或招聘官定制专属破局邮件<br>• **主权薪酬谈判**：依据图谱共振优势输出针对高阶薪酬的反向博弈话术 |
 
 ---
 
-## ⚙️ 双核引擎机制 (Dual-Engine Architecture)
+## ⚙️ 双核 Graph-RAG 引擎
 
-| 核心组件 | 技术实现 | 业务价值 |
-| :--- | :--- | :--- |
-| **知识图谱 (KG)** | 邻接拓扑、BFS 最短路径寻径、权重耦合评估 | 突破单点匹配，发现前沿技能跃迁天桥与名企基因密码 |
-| **向量记忆 (RAG)** | 词项余弦相似度检索、高密度关键词提取 | 实时索引名企高难度题库、顶级职位 JD 与 STAR 金句 |
-| **渐进式模型适配** | 离线高保真合成引擎 + Gemini / OpenAI API 扩展 | 零配置即开即用，输入 Key 即可无缝升级万亿参数推理 |
+```
+┌────────────────────────────────────────────────────────┐
+│                   SOLSTICE DUAL-ENGINE                 │
+├──────────────────────────┬─────────────────────────────┤
+│   知识图谱引擎 (KG Engine)   │   动态语义记忆 (RAG Engine)    │
+├──────────────────────────┼─────────────────────────────┤
+│ • 邻接图拓扑与多跳 BFS 寻径    │ • 词项与向量余弦相似度检索     │
+│ • 名企岗位能力耦合权重与文化对齐 │ • 标杆企业历年真实面试题库     │
+│ • 技能差距桥梁与学习周期预估   │ • 顶级科技/金融高张力动词库    │
+└──────────────────────────┴─────────────────────────────┘
+                             ▲
+                             │
+     ┌───────────────────────┴───────────────────────┐
+     │ 渐进式多模态推理层 (Dual-Engine LLM Adapter)  │
+     │   本地高保真模拟引擎 ⇄ Gemini 2.0 ⇄ GPT-4o   │
+     └───────────────────────────────────────────────┘
+```
+
+---
+
+## 🏛️ 系统架构
+
+```mermaid
+flowchart LR
+    subgraph Client ["Solstice Canvas UI"]
+        UI_SP["🎨 自画像"]
+        UI_CS["🌌 星宿图"]
+        UI_RH["🎭 排练场"]
+        UI_OD["🧭 奥德赛"]
+    end
+
+    subgraph Core ["至日调度中枢 (Master Orchestrator)"]
+        Router["意图路由与状态总线"]
+        Adapter["模型适配器 (Local / Gemini / OpenAI)"]
+    end
+
+    subgraph Engines ["双核 Graph-RAG 知识基座"]
+        KG["知识图谱 (Multi-hop Pathfinder)"]
+        RAG["动态向量库 (Benchmark JDs & Questions)"]
+    end
+
+    Client <--> Router
+    Router <--> Adapter
+    Router <--> Engines
+```
 
 ---
 
 ## 🚀 快速上手 (Quick Start)
 
-### 1. 克隆仓库与依赖就绪
+三步开启 Solstice 艺术工坊：
+
 ```bash
+# 1. 克隆代码库
 git clone https://github.com/Moon-Meld/Solstice.git
 cd Solstice
-npm install
-```
 
-### 2. 启动至日艺术工坊
-```bash
+# 2. 安装工程依赖
+npm install
+
+# 3. 启动本地开发服务 (支持按需开启)
 npm run dev
 ```
-在浏览器打开 **`http://localhost:5173`** 即可开启沉浸式体验。
 
-### 3. 构建生产级产物
-```bash
-npm run build
-```
+*默认启用内置的渐进式高保真 Graph-RAG 引擎（完全离线即开即跑），亦可在界面右上角一键填入 Google Gemini 或 OpenAI API Key 升级云端大模型协同。*
 
 ---
 
-## 📁 工程目录结构
+## 📁 目录与工程设计
+
+<details>
+<summary><strong>展开查看详细工程目录结构 (Directory Tree)</strong></summary>
 
 ```
 Solstice/
 ├── assets/
-│   └── solstice-banner.svg         # 仓库艺术级宽幅全景海报
+│   └── solstice-banner.svg         # 极简居中艺术级全景海报
 ├── public/
 │   ├── solstice-logo.svg           # 至日浑天仪高精度矢量印章
 │   └── favicon.svg                 # 浏览器精细标签图标
 ├── src/
-│   ├── components/
-│   │   ├── Common/                 # 天体星辰背景与模型配置弹窗
-│   │   ├── Navigation/             # 天体罗盘导航栏与星位切换
-│   │   ├── SelfPortrait/           # 自画像 Atelier
-│   │   ├── Constellation/          # 星宿图 Atelier
-│   │   ├── TheRehearsal/           # 排练场 Atelier
-│   │   └── Odyssey/                # 奥德赛 Atelier
-│   ├── services/
-│   │   ├── kgEngine.ts             # 知识图谱核心引擎
-│   │   ├── ragEngine.ts            # 动态上下文向量检索引擎
-│   │   ├── orchestrator.ts         # 至日总指挥编排器
-│   │   ├── llmAdapter.ts           # 大模型与本地合成适配器
-│   │   └── agents/                 # 四大子智能体实现
-│   ├── data/                       # 预置图谱、题库、标杆 JD 与 STAR 模板
-│   ├── types/                      # 严谨 TypeScript 类型声明
-│   ├── App.tsx                     # 顶层入口组件
+│   ├── components/                 # 现代化玻璃拟态与天穹星图 UI 组件
+│   │   ├── Navigation/             # 天体罗盘导航栏
+│   │   ├── SelfPortrait/           # 自画像 Atelier (STAR 叙事工坊)
+│   │   ├── Constellation/          # 星宿图 Atelier (SVG 交互式引力场)
+│   │   ├── TheRehearsal/           # 排练场 Atelier (四重人设面试舞台)
+│   │   ├── Odyssey/                # 奥德赛 Atelier (求职看板与文书)
+│   │   └── Common/                 # 背景粒子画布与模型配置弹窗
+│   ├── services/                   # 核心计算与调度引擎
+│   │   ├── kgEngine.ts             # 知识图谱算法引擎 (BFS 寻径)
+│   │   ├── ragEngine.ts            # 动态语义检索与 ATS 共振计算
+│   │   ├── orchestrator.ts         # 至日统一编排器
+│   │   ├── llmAdapter.ts           # 渐进式模型适配器
+│   │   └── agents/                 # 四大子智能体业务逻辑
+│   ├── data/                       # 行业图谱、标杆 JD、名企真题与动词模板
+│   ├── types/                      # 严谨 TypeScript 类型定义
+│   ├── App.tsx                     # 根组件
 │   └── index.css                   # 琉璃拟态与金芒质感样式
-├── .github/workflows/ci.yml        # GitHub Actions 自动化 CI 流程
-├── CONTRIBUTING.md                 # 贡献指南
-├── LICENSE                         # MIT 开源许可证
+├── .github/workflows/ci.yml        # GitHub Actions 自动化持续集成
+├── CONTRIBUTING.md                 # 艺术级贡献指南
+├── LICENSE                         # MIT 开源协议
 └── package.json
 ```
 
+</details>
+
 ---
 
-## 📜 许可证 (License)
+## 📜 开源协议
 
-本项目采用 [MIT License](LICENSE) 开源协议。
+本项目基于 [MIT License](LICENSE) 协议开源。
 
 <div align="center">
   <sub>Artisan-crafted with precision by the Solstice Architecture Guild.</sub>
