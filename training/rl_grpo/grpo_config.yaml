@@ -1,0 +1,21 @@
+# Solstice-GRPO (Group Relative Policy Optimization) Hyperparameters
+# Upgrade Solstice-Artisan-Writer with online deterministic verifiers
+
+group_size: 8
+kl_coef: 0.04
+lr: 1.0e-6
+clip_eps: 0.2
+max_grad_norm: 1.0
+temperature: 0.8
+epochs: 3
+batch_size: 2
+max_prompt_length: 512
+max_completion_length: 256
+
+verifier_weights:
+  anti_cliche: 0.35
+  star_density: 0.35
+  kg_keyword_coverage: 0.30
+
+hard_gate:
+  metric_fabrication_penalty: -1.0

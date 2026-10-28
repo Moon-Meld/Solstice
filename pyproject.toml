@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "solstice"
+version = "1.0.0"
+description = "Solstice (至日) — Industrial-Grade AI Career & Internship Multi-Agent Platform"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Solstice Architecture Guild" }
+]
+dependencies = [
+    "langgraph>=0.0.50",
+    "pydantic>=2.7.0",
+    "pydantic-settings>=2.2.0",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.28.0",
+    "typer>=0.12.0",
+    "rich>=13.7.0",
+    "neo4j>=5.18.0",
+    "rank-bm25>=0.2.2",
+    "httpx>=0.27.0",
+    "python-dotenv>=1.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0"
+]
+
+[project.scripts]
+solstice = "src.cli.app:app"
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "training/eval"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+    "ignore::ResourceWarning"
+]
