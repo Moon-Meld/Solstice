@@ -160,3 +160,25 @@ export interface OrchestratorState {
   journalEntries: JournalEntry[];
   llmConfig: LLMConfig;
 }
+
+export interface ElectronAPI {
+  isDesktop: boolean;
+  platform: 'darwin' | 'win32' | 'linux';
+  getAppInfo: () => Promise<{
+    version: string;
+    name: string;
+    platform: string;
+    arch: string;
+    isPackaged: boolean;
+  }>;
+  minimizeWindow: () => void;
+  maximizeWindow: () => void;
+  closeWindow: () => void;
+}
+
+declare global {
+  interface Window {
+    electronAPI?: ElectronAPI;
+  }
+}
+

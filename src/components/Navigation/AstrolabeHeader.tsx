@@ -7,10 +7,12 @@ import {
   SlidersHorizontal,
   ChevronDown,
   Layers,
-  Download
+  Download,
+  Laptop
 } from 'lucide-react';
 import { AtelierType, LLMConfig } from '../../types';
 import { kgEngine } from '../../services/kgEngine';
+import { DesktopDownloadModal } from './DesktopDownloadModal';
 
 interface Props {
   activeAtelier: AtelierType;
@@ -32,6 +34,8 @@ export const AstrolabeHeader: React.FC<Props> = ({
   onExportBackup
 }) => {
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
+  const [downloadModalOpen, setDownloadModalOpen] = useState(false);
+  const isDesktop = typeof window !== 'undefined' && Boolean(window.electronAPI?.isDesktop);
   const roles = kgEngine.getRoleNodes();
   const currentRoleNode = kgEngine.getNode(currentTargetRole);
 
@@ -68,7 +72,7 @@ export const AstrolabeHeader: React.FC<Props> = ({
         {/* Brand & Astrolabe Mark */}
         <div className="flex items-center gap-3.5 shrink-0">
           <div className="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-solstice-900 to-solstice-800 border border-solstice-gold/30 shadow-gold-glow overflow-hidden">
-            <img src="/solstice-logo.svg" alt="Solstice Icon" className="w-8 h-8 object-contain" />
+            <img src="./solstice-logo.svg" alt="Solstice Icon" className="w-8 h-8 object-contain" />
           </div>
           <div>
             <div className="flex items-center gap-2">
@@ -159,6 +163,26 @@ export const AstrolabeHeader: React.FC<Props> = ({
             )}
           </div>
 
+          {/* Desktop App Download or Indicator */}
+          {isDesktop ? (
+            <div 
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-xl border border-solstice-gold/30 bg-solstice-gold/10 text-solstice-gold font-mono"
+              title="当前正运行在 Solstice 桌面客户端原生环境"
+            >
+              <Laptop className="w-3.5 h-3.5" />
+              <span className="text-[11px]">桌面版</span>
+            </div>
+          ) : (
+            <button
+              onClick={() => setDownloadModalOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-xl border border-solstice-gold/40 bg-gradient-to-r from-solstice-900/90 to-solstice-800/90 hover:border-solstice-gold hover:shadow-gold-glow text-solstice-gold-light transition-all group"
+              title="下载 macOS / Windows 桌面客户端"
+            >
+              <Laptop className="w-3.5 h-3.5 text-solstice-gold group-hover:-translate-y-0.5 transition-transform" />
+              <span className="font-medium text-[11px] gold-gradient-text hidden sm:inline">下载客户端</span>
+            </button>
+          )}
+
           {/* Export Full Workspace Backup */}
           {onExportBackup && (
             <button
@@ -203,6 +227,12 @@ export const AstrolabeHeader: React.FC<Props> = ({
           );
         })}
       </div>
+
+      {/* Desktop App Download Modal */}
+      <DesktopDownloadModal 
+        isOpen={downloadModalOpen} 
+        onClose={() => setDownloadModalOpen(false)} 
+      />
     </header>
   );
 };

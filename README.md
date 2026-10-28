@@ -141,11 +141,33 @@ cd Solstice
 # 2. 注入工程养分
 npm install
 
-# 3. 按需唤醒天穹界面 (开发运行)
+# 3. 按需唤醒天穹界面 (网页端开发运行)
 npm run dev
 ```
 
 > **渐进式运行说明**：系统内置高保真 Graph-RAG 知识图谱推理引擎，无需配置外部网络或 API 密钥即可直接享受完整的四工坊流转体验。若需接入万亿大模型实时推理，可在界面右上角罗盘设置中随时填入 Google Gemini 或 OpenAI API Key。
+
+---
+
+## 🖥️ 跨平台桌面客户端 (macOS / Windows)
+
+除现代 Web 网页版外，Solstice 原生支持 **macOS** 与 **Windows** 桌面端独立安装包：
+
+* **🍎 macOS 客户端**：提供 `Solstice-1.0.0-arm64.dmg`（Apple Silicon M1/M2/M3/M4）与 `Solstice-1.0.0-x64.dmg`（Intel），拖拽即可安装；
+* **🪟 Windows 客户端**：提供标准 NSIS 安装向导 `Solstice Setup 1.0.0.exe` 与单文件便携版 `Solstice 1.0.0.exe`；
+* **⚡ 独享优势**：毫秒级秒开启动、断网离线 Graph-RAG 图谱推理、经历画卷纯本地隔离安全存取；
+* **🛠️ 桌面打包指令**：
+  ```bash
+  # 本地桌面端开发
+  npm run electron:dev
+
+  # 一键打包 macOS 安装包 (.dmg)
+  npm run electron:build:mac
+
+  # 一键打包 Windows 安装包 (.exe)
+  npm run electron:build:win
+  ```
+  详细分发与跨平台细节请参阅 [桌面端全景指南 (DESKTOP_GUIDE.md)](DESKTOP_GUIDE.md)。
 
 <div align="center">
   <img src="assets/solstice-divider.svg" alt="Divider" width="80%" />

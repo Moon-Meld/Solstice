@@ -1,0 +1,45 @@
+name: Build and Release Desktop Apps
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Generate App Icons
+        run: npm run icons
+
+      - name: Build Web Assets
+        run: npm run build
+
+      - name: Package Desktop App & Draft Release
+        uses: electron-userland/electron-builder-action@v1.4.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          release: true
+          mac_certs: ''
+          mac_installer_certs: ''
+          args: ${{ matrix.os == 'macos-latest' && '--mac' || '--win' }}
